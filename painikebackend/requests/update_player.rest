@@ -1,0 +1,7 @@
+put http://localhost:3001/api/players/:id
+Content-Type: application/json
+
+{
+  "username": "testblog",
+  "points": "12"
+}

@@ -1,0 +1,10 @@
+/painikepeli/node_modules
+/painikepeli/package-lock.json
+
+painikepeli/build.sh
+
+/painikebackend/node_modules
+/painikebackend/package-lock.json
+/painikebackend/.env
+/painikebackend/build
+painikebackend/.env
