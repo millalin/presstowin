@@ -94,9 +94,6 @@ window.localStorage.setItem(
     setPressed(updatedPresses1.pressed)
     setPresses(presses.map(p => updatedPresses1))
 
-
-    console.log('PAINETTU KRT ',updatedPresses1.pressed)
-    // jos painalluksia kaavan mukaan saa pelaaja pisteitä...
    winnings(updatedPresses1.pressed, pelaaja)
   }
 
@@ -150,32 +147,34 @@ window.localStorage.setItem(
   const loginForm = () => (
     <form onSubmit={currentPlayer}>
       <input type="text" name="username" />
-      <button type="submit">Set username</button>
+      <Button variant="outline-info" type="submit">Set username</Button>
     </form>
   )
 
 
   const playForm = () => (
     <div>
-      Current user: <b>{user.username}</b>
+      Current player: <b>{user.username}</b>
       <br></br>
-      Change user: <button onClick={exitUser}>Exit</button>
-
-      <h2>Pelaa</h2>
-      <Button variant="primary" onClick={buttonPressed}>pelaa</Button>
-
-      <Statistics points={points} pressed={pressedtotal} />
-
-      {players.map(p => <li> {p.username}</li>)}
+      Change player: <Button variant="outline-info"onClick={exitUser}>Exit</Button>
+<div>
+&nbsp;&nbsp;&nbsp;
+<h2>Pelaa</h2>
+      <Button variant="outline-info" onClick={buttonPressed}>pelaa</Button>
+</div>
+&nbsp;&nbsp;&nbsp;
+     <div>
+     <Statistics points={points} pressed={pressedtotal} />
+     </div>
     </div>
   )
 
 
   return (
-    <div class="container">
-      <div>
+    <div class="container" >
+      <div class="text-center" >
       {(message &&
-        <Alert variant="success">
+        <Alert variant="info">
           {message}
         </Alert>
       )}
@@ -188,12 +187,6 @@ window.localStorage.setItem(
   )
 }
 
-const Statistic = ({ text, value }) => (
-  <tr>
-    <td>{text}</td>
-    <td>{value}</td>
-  </tr>
-)
 
 
 const Statistics = ({ points, pressed }) => {
@@ -212,12 +205,10 @@ const Statistics = ({ points, pressed }) => {
   return (
     <div>
       <h2>Pisteet</h2>
-      <table>
-        <tbody>
-          <Statistic text='omat pisteet' value={points} />
-          <Statistic text='painettu' value={pressed} />
-        </tbody>
-      </table>
+    <div>
+      Omat pisteet: {points}
+    </div>
+ 
     </div>
   )
 }
