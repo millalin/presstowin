@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import playerService from './services/players'
 import pressedService from './services/presses'
+import { Table, Form, Button, Alert } from 'react-bootstrap'
 
 
 const App = () => {
   const [points, setPoints] = useState(20)
-  const [pressedtotal, setPressed] = useState(0)
+  const [pressedtotal, setPressed] = useState(null)
   const [presses, setPresses] = useState([])
   const [players, setPlayers] = useState([])
   const [user, setUser] = useState(null)
-
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     playerService.getAll()
@@ -29,6 +30,37 @@ const App = () => {
       setPoints(user.points)
     }
   }, [])
+
+  const winnings = (presses, pelaaja) => {
+
+    if(presses % 500 === 0) {
+      const changed2 = { ...pelaaja, points: pelaaja.points + 249 }
+      updatePlayer(changed2)
+
+      setNotification(`You won 250 points`)
+    
+    }
+    else if(presses % 100 === 0) {
+      const changed2 = { ...pelaaja, points: pelaaja.points + 39 }
+      updatePlayer(changed2)
+
+      setNotification(`You won 40 points`)
+      
+    }
+    else if(presses % 10 === 0) {
+      const changed2 = { ...pelaaja, points: pelaaja.points + 9 }
+      updatePlayer(changed2)
+
+      setNotification('You won 10 points')
+    }
+  }
+
+  const setNotification = (notification) => {
+    setMessage(notification)
+    setTimeout(() => {
+      setMessage(null)
+    }, 4000)
+  }
 
 const updatePlayer = async (changed) => {
   const updatedPlayer = await playerService
@@ -62,20 +94,10 @@ window.localStorage.setItem(
     setPressed(updatedPresses1.pressed)
     setPresses(presses.map(p => updatedPresses1))
 
-    
+
+    console.log('PAINETTU KRT ',updatedPresses1.pressed)
     // jos painalluksia kaavan mukaan saa pelaaja pisteitä...
-    if(pressedtotal % 500 === 0) {
-      const changed2 = { ...pelaaja, points: pelaaja.points + 249 }
-      updatePlayer(changed2)
-    }
-    else if(pressedtotal % 100 === 0) {
-      const changed2 = { ...pelaaja, points: pelaaja.points + 39 }
-      updatePlayer(changed2)
-    }
-    else if(pressedtotal % 10 === 0) {
-      const changed2 = { ...pelaaja, points: pelaaja.points + 9 }
-      updatePlayer(changed2)
-    }
+   winnings(updatedPresses1.pressed, pelaaja)
   }
 
 
@@ -140,7 +162,7 @@ window.localStorage.setItem(
       Change user: <button onClick={exitUser}>Exit</button>
 
       <h2>Pelaa</h2>
-      <button onClick={buttonPressed}>pelaa</button>
+      <Button variant="primary" onClick={buttonPressed}>pelaa</Button>
 
       <Statistics points={points} pressed={pressedtotal} />
 
@@ -150,8 +172,13 @@ window.localStorage.setItem(
 
 
   return (
-    <div>
+    <div class="container">
       <div>
+      {(message &&
+        <Alert variant="success">
+          {message}
+        </Alert>
+      )}
         {user === null && loginForm()}
 
         {user !== null && playForm()}
