@@ -34,19 +34,19 @@ const App = () => {
 
     if (presses % 500 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 249 }
-      updatePlayer(changed2,user)
+      updatePlayer(changed2, user)
 
       setNotification(`You won 250 points`)
     }
     else if (presses % 100 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 39 }
-      updatePlayer(changed2,user)
+      updatePlayer(changed2, user)
 
       setNotification(`You won 40 points`)
     }
     else if (presses % 10 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 9 }
-      updatePlayer(changed2,user)
+      updatePlayer(changed2, user)
 
       setNotification('You won 10 points')
     }
@@ -81,19 +81,19 @@ const App = () => {
     const changed = { ...playerNow, points: playerNow.points - 1 }
 
     if (points === 0 || points < 0) {
-      if (window.confirm('Are you sure')) {
+      if (window.confirm('Do you want to start again?')) {
 
         const changed2 = { ...playerNow, points: 20 }
-        updatePlayer(changed2,user)
+        updatePlayer(changed2, user)
         setNotification('You have 20 points again. Good luck!')
 
       } else {
         const changed3 = { ...playerNow, points: 0 }
-        updatePlayer(changed3,user)
+        updatePlayer(changed3, user)
         setNotification('New game cancelled. You have still 0 points. Play again?')
       }
     } else {
-      updatePlayer(changed,user)
+      updatePlayer(changed, user)
 
       const pressObj = presses[0]
       const changedPressCount = { ...pressObj, pressed: pressObj.pressed + 1 }
@@ -131,14 +131,20 @@ const App = () => {
     const alreadeExistsUser = players.filter(p => p.username === un)
     if (alreadeExistsUser.length !== 0) {
 
-      setUser(alreadeExistsUser[0])
-      window.localStorage.setItem(
-        'loggedUser', JSON.stringify(alreadeExistsUser[0])
-      )
-      setPoints(alreadeExistsUser[0].points)
+      if (alreadeExistsUser[0].online === true) {
+        setNotification('User with this username already playing')
+        setUser(null)
+      } else {
+        setUser(alreadeExistsUser[0])
+        window.localStorage.setItem(
+          'loggedUser', JSON.stringify(alreadeExistsUser[0])
+        )
+        setPoints(alreadeExistsUser[0].points)
 
-      const c = {...alreadeExistsUser[0], online: true}
-      updatePlayer(c, alreadeExistsUser[0])
+        const c = { ...alreadeExistsUser[0], online: true }
+        updatePlayer(c, alreadeExistsUser[0])
+      }
+
 
     } else {
       const playerObj = {
@@ -166,18 +172,18 @@ const App = () => {
 
   const loginForm = () => (
     <div>
-    <form onSubmit={currentPlayer}>
-      <input type="text" name="username" />
-      <Button variant="outline-info" type="submit">Set username</Button>
-    </form>
-    <div>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <form onSubmit={currentPlayer}>
+        <input type="text" name="username" />
+        <Button variant="outline-info" type="submit">Set username</Button>
+      </form>
+      <div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <p>
-    Set username and start playing! </p>
-    <p>
-First you have 20 points. Press the button and lose 1 point, but if you press the button at the right time, you might win points! 
+          Set username and start playing! </p>
+        <p>
+          First you have 20 points. Press the button and lose 1 point, but if you press the button at the right time, you might win points!
 </p>
-<p>Timing is everything..</p></div>
+        <p>Timing is everything..</p></div>
     </div>
   )
 
@@ -190,7 +196,7 @@ First you have 20 points. Press the button and lose 1 point, but if you press th
       <div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <h2>Good luck {user.username}! Let's play!</h2> &nbsp;&nbsp;
-
+      
         <Button variant="info" onClick={buttonPressed}>Play</Button>
       </div>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
