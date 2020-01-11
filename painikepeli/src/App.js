@@ -34,19 +34,19 @@ const App = () => {
 
     if (presses % 500 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 249 }
-      updatePlayer(changed2)
+      updatePlayer(changed2,user)
 
       setNotification(`You won 250 points`)
     }
     else if (presses % 100 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 39 }
-      updatePlayer(changed2)
+      updatePlayer(changed2,user)
 
       setNotification(`You won 40 points`)
     }
     else if (presses % 10 === 0) {
       const changed2 = { ...currentPlayer, points: currentPlayer.points + 9 }
-      updatePlayer(changed2)
+      updatePlayer(changed2,user)
 
       setNotification('You won 10 points')
     }
@@ -61,11 +61,10 @@ const App = () => {
   }
 
 
-  const updatePlayer = async (changed) => {
+  const updatePlayer = async (changed, curUser) => {
     const updatedPlayer = await playerService
       .update(changed)
-
-    setPlayers(players.map(player => player.username === user.username ? updatedPlayer : player))
+    setPlayers(players.map(player => player.username === curUser.username ? updatedPlayer : player))
     setUser(updatedPlayer)
     setPoints(updatedPlayer.points)
 
@@ -85,16 +84,16 @@ const App = () => {
       if (window.confirm('Are you sure')) {
 
         const changed2 = { ...playerNow, points: 20 }
-        updatePlayer(changed2)
+        updatePlayer(changed2,user)
         setNotification('You have 20 points again. Good luck!')
 
       } else {
         const changed3 = { ...playerNow, points: 0 }
-        updatePlayer(changed3)
+        updatePlayer(changed3,user)
         setNotification('New game cancelled. You have still 0 points. Play again?')
       }
     } else {
-      updatePlayer(changed)
+      updatePlayer(changed,user)
 
       const pressObj = presses[0]
       const changedPressCount = { ...pressObj, pressed: pressObj.pressed + 1 }
@@ -109,10 +108,19 @@ const App = () => {
   }
 
 
-  const exitUser = () => {
+  const exitUser = async (event) => {
+    event.preventDefault()
+
+    const player = players.filter(p => p.username === user.username)
+    const playerNow = player[0]
+    const changed = { ...playerNow, online: false }
+
+    const updatedPlayer = await playerService
+      .update(changed)
+    setPlayers(players.map(player => player.username === user.username ? updatedPlayer : player))
+    setUser(null)
     window.localStorage.removeItem(
       'loggedUser')
-    setUser(null)
   }
 
 
@@ -129,10 +137,14 @@ const App = () => {
       )
       setPoints(alreadeExistsUser[0].points)
 
+      const c = {...alreadeExistsUser[0], online: true}
+      updatePlayer(c, alreadeExistsUser[0])
+
     } else {
       const playerObj = {
         username: un,
-        points: "20"
+        points: "20",
+        online: true
       }
 
       playerService

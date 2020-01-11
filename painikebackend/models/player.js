@@ -20,7 +20,8 @@ mongoose.connect(url, { useNewUrlParser: true })
 
   const playerSchema = mongoose.Schema({
     username: String,
-    points: Number
+    points: Number,
+    online: Boolean
   })
   
   //playerSchema.plugin(uniqueValidator)

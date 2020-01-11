@@ -14,9 +14,8 @@ const create = async newObject => {
 }
 
 const update =  newObject => {
-    console.log('newpress ', newObject, newObject.id)
   const request = axios.put(`${baseUrl}/${newObject.id}`, newObject)
   return request.then(response => response.data)
 }
 
-export default { getAll, create, update } 
+export default { getAll, create, update }

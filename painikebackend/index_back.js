@@ -16,13 +16,7 @@ app.use(express.static('build'))
 
 
 
-let players = [
-  {
-    id: 1,
-    username: "milla",
-    points: 20,
-  },
-]
+
 app.get('/', (req, res) => {
   res.send('<h1>Play!</h1>')
 })
@@ -72,6 +66,7 @@ app.put('/api/players/:id', (request, response, next) => {
   const player = {
     username: body.username,
     points: body.points,
+    online: body.online,
   }
   
   
