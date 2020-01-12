@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import playerService from './services/players'
 import pressedService from './services/presses'
 import { Button, Alert } from 'react-bootstrap'
-
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [points, setPoints] = useState(20)
@@ -18,7 +18,6 @@ const App = () => {
     pressedService.getAll()
       .then(press => setPresses(press))
   }, [])
-
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -77,8 +76,7 @@ const App = () => {
   const buttonPressed = async () => {
 
     const updateCurrentPresses = await pressedService.getAll()
-    const allCurrentPressesFromPlayers= updateCurrentPresses[0]
-
+    const allCurrentPressesFromPlayers = updateCurrentPresses[0]
 
     const player = players.filter(p => p.username === user.username)
     const playerNow = player[0]
@@ -99,10 +97,8 @@ const App = () => {
     } else {
       updatePlayer(changed, user)
 
-      //const pressObj = presses[0]
       const changedPressCount = { ...allCurrentPressesFromPlayers, pressed: allCurrentPressesFromPlayers.pressed + 1 }
       const updatedPressesCount = await pressedService.update(changedPressCount)
-
       setPresses(presses.map(p => updatedPressesCount))
 
       winnings(updatedPressesCount.pressed, playerNow)
@@ -123,83 +119,59 @@ const App = () => {
       .update(changed)
     setPlayers(players.map(player => player.username === user.username ? updatedPlayer : player))
     setUser(null)
+
     window.localStorage.removeItem(
       'loggedUser')
   }
 
-
-  const currentPlayer = (event) => {
-    event.preventDefault()
-
-    const un = event.target.username.value
-    const alreadeExistsUser = players.filter(p => p.username === un)
-    if (alreadeExistsUser.length !== 0) {
-
-      if (alreadeExistsUser[0].online === true) {
-        setNotification('User with this username already playing')
-        setUser(null)
-      } else {
-        setUser(alreadeExistsUser[0])
-        window.localStorage.setItem(
-          'loggedUser', JSON.stringify(alreadeExistsUser[0])
-        )
-        setPoints(alreadeExistsUser[0].points)
-
-        const c = { ...alreadeExistsUser[0], online: true }
-        updatePlayer(c, alreadeExistsUser[0])
-      }
-
-
+  const playerAlreadyExists = (alreadeExistsUser) => {
+    if (alreadeExistsUser[0].online === true) {
+      setNotification('User with this username already playing')
+      setUser(null)
     } else {
-      const playerObj = {
-        username: un,
-        points: "20",
-        online: true
-      }
+      setUser(alreadeExistsUser[0])
+      window.localStorage.setItem(
+        'loggedUser', JSON.stringify(alreadeExistsUser[0])
+      )
+      setPoints(alreadeExistsUser[0].points)
 
-      playerService
-        .create(playerObj)
-        .then(data => {
-          setPlayers(players.concat(data))
-
-          window.localStorage.setItem(
-            'loggedUser', JSON.stringify(data)
-          )
-          setUser(data)
-        })
-
-      setPoints(20)
-      event.target.username.value = ''
+      const c = { ...alreadeExistsUser[0], online: true }
+      updatePlayer(c, alreadeExistsUser[0])
     }
   }
 
+  const newPlayer = (un) => {
+    const playerObj = {
+      username: un,
+      points: "20",
+      online: true
+    }
 
-  const loginForm = () => (
-    <div>
-      <form onSubmit={currentPlayer}>
-        <input type="text" name="username" />
-        <Button variant="outline-info" type="submit">Set username</Button>
-      </form>
-      <div>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <p>
-          Set username and start playing! </p>
-        <p>
-          First you have 20 points. Press the button and lose 1 point, but if you press the button at the right time, you might win points!
-</p>
-        <p>Timing is everything..</p></div>
-    </div>
-  )
+    playerService
+      .create(playerObj)
+      .then(data => {
+        setPlayers(players.concat(data))
+
+        window.localStorage.setItem(
+          'loggedUser', JSON.stringify(data)
+        )
+        setUser(data)
+      })
+
+    setPoints(20)
+  }
 
 
   const playForm = () => (
     <div>
+      <div>
+        </div>
       Current player: <b>{user.username}</b> &nbsp;
       <br></br>
       Change player: <Button variant="outline-info" onClick={exitUser}>Exit</Button>
       <div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <h2>Good luck {user.username}! Let's play!</h2> &nbsp;&nbsp;
+  <h3>Good luck {user.username}! Let's play!</h3> &nbsp;&nbsp;
       
         <Button variant="info" onClick={buttonPressed}>Play</Button>
       </div>
@@ -219,7 +191,7 @@ const App = () => {
             {message}
           </Alert>
         )}
-        {user === null && loginForm()}
+        {user === null && <LoginForm playerAlreadyExists={playerAlreadyExists} newPlayer={newPlayer} />}
 
         {user !== null && playForm()}
       </div>

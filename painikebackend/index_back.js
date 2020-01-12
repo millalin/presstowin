@@ -3,19 +3,32 @@ const express = require('express')
 
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const mongoose = require('mongoose')
 const Player = require('./models/player')
 const Presses = require('./models/presses')
 const http = require('http')
-
 const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-
 app.use(express.static('build'))
 
 
+mongoose.set('useFindAndModify', false)
 
+
+const url = process.env.MONGODB_URI
+
+console.log('connecting to', url)
+
+
+mongoose.connect(url, { useNewUrlParser: true })
+  .then(result => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message)
+  })
 
 app.get('/', (req, res) => {
   res.send('<h1>Play!</h1>')
@@ -59,7 +72,6 @@ app.post('/api/players', async (request, response, next) => {
 
 
 app.put('/api/players/:id', (request, response, next) => {
-  console.log('hearerit', request.headers)
   
   const body = request.body
   
@@ -77,10 +89,6 @@ app.put('/api/players/:id', (request, response, next) => {
     })
     .catch(error => next(error))
 })
-
-
-
-
 
 
 
@@ -131,7 +139,6 @@ app.put('/api/presses/:id', (request, response, next) => {
     pressed: body.pressed,
   }
   
-  const jsonid = (request.params.id)
   Presses
     .findByIdAndUpdate(request.params.id, p, { new: true })
     .then(updated => {
