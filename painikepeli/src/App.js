@@ -76,6 +76,10 @@ const App = () => {
 
   const buttonPressed = async () => {
 
+    const updateCurrentPresses = await pressedService.getAll()
+    const allCurrentPressesFromPlayers= updateCurrentPresses[0]
+
+
     const player = players.filter(p => p.username === user.username)
     const playerNow = player[0]
     const changed = { ...playerNow, points: playerNow.points - 1 }
@@ -95,8 +99,8 @@ const App = () => {
     } else {
       updatePlayer(changed, user)
 
-      const pressObj = presses[0]
-      const changedPressCount = { ...pressObj, pressed: pressObj.pressed + 1 }
+      //const pressObj = presses[0]
+      const changedPressCount = { ...allCurrentPressesFromPlayers, pressed: allCurrentPressesFromPlayers.pressed + 1 }
       const updatedPressesCount = await pressedService.update(changedPressCount)
 
       setPresses(presses.map(p => updatedPressesCount))

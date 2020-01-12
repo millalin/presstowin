@@ -1,6 +1,6 @@
 import axios from 'axios'
-const baseUrl = 'https://presstowin.herokuapp.com/api/presses'
-//const baseUrl = 'http://localhost:3001/api/presses'
+//const baseUrl = 'https://press-to-win.herokuapp.com/api/presses'
+const baseUrl = 'http://localhost:3001/api/presses'
 
 const getAll = () => {
   const request = axios.get(baseUrl)
