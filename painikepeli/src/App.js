@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import playerService from './services/players'
 import pressedService from './services/presses'
-import { Button, Alert } from 'react-bootstrap'
+import { Alert } from 'react-bootstrap'
 import LoginForm from './components/LoginForm'
+import PlayForm from './components/PlayForm'
+
 
 const App = () => {
   const [points, setPoints] = useState(20)
@@ -103,8 +105,6 @@ const App = () => {
 
       winnings(updatedPressesCount.pressed, playerNow)
     }
-
-
   }
 
 
@@ -134,6 +134,7 @@ const App = () => {
         'loggedUser', JSON.stringify(alreadeExistsUser[0])
       )
       setPoints(alreadeExistsUser[0].points)
+      setNotification('Welcome back! You have played before, continue playing!')
 
       const c = { ...alreadeExistsUser[0], online: true }
       updatePlayer(c, alreadeExistsUser[0])
@@ -146,6 +147,7 @@ const App = () => {
       points: "20",
       online: true
     }
+    setNotification('Welcome to Press To Win! You can start playing now')
 
     playerService
       .create(playerObj)
@@ -162,26 +164,6 @@ const App = () => {
   }
 
 
-  const playForm = () => (
-    <div>
-      <div>
-        </div>
-      Current player: <b>{user.username}</b> &nbsp;
-      <br></br>
-      Change player: <Button variant="outline-info" onClick={exitUser}>Exit</Button>
-      <div>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <h3>Good luck {user.username}! Let's play!</h3> &nbsp;&nbsp;
-      
-        <Button variant="info" onClick={buttonPressed}>Play</Button>
-      </div>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-     <div>
-        <Statistics points={points} />
-      </div>
-    </div>
-  )
-
 
   return (
     <div className="container" >
@@ -193,7 +175,7 @@ const App = () => {
         )}
         {user === null && <LoginForm playerAlreadyExists={playerAlreadyExists} newPlayer={newPlayer} />}
 
-        {user !== null && playForm()}
+        {user !== null && <PlayForm user={user} points={points} exitUser={exitUser} buttonPressed={buttonPressed} />}
       </div>
 
     </div>
@@ -202,26 +184,6 @@ const App = () => {
 
 
 
-const Statistics = ({ points }) => {
 
-  if (points === 0) {
-    return (
-      <div>
-        <h2>You have zero points</h2>
-        <p>If you want to start over, press 'Play'</p>
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <h2>Score</h2>
-      <div>
-        Your current points: {points}
-      </div>
-
-    </div>
-  )
-}
 
 export default App;

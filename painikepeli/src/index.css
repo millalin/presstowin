@@ -13,10 +13,11 @@ code {
 }
 
 .container {
-  background-color: rgb(190, 240, 220);
+  background-color: rgb(163, 228, 202);
+  background:linear-gradient(rgba(92, 230, 133, 0.5),rgba(12, 118, 206, 0.5), transparent);
   font-style: italic;
-  padding-top: 60px;
-  padding-bottom: 60px;
+  padding-top: 70px;
+  padding-bottom: 140px;
 }
 
 

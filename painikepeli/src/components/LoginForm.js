@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Alert } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import playerService from '../services/players'
 
 const Login = (props) => {
