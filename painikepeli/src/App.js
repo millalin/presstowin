@@ -30,35 +30,34 @@ const App = () => {
     }
   }, [])
 
-
-  const winnings = (presses, currentPlayer) => {
-
-    if (presses % 500 === 0) {
-      const changed2 = { ...currentPlayer, points: currentPlayer.points + 249 }
-      updatePlayer(changed2, user)
-
-      setNotification(`You won 250 points`)
-    }
-    else if (presses % 100 === 0) {
-      const changed2 = { ...currentPlayer, points: currentPlayer.points + 39 }
-      updatePlayer(changed2, user)
-
-      setNotification(`You won 40 points`)
-    }
-    else if (presses % 10 === 0) {
-      const changed2 = { ...currentPlayer, points: currentPlayer.points + 9 }
-      updatePlayer(changed2, user)
-
-      setNotification('You won 10 points')
-    }
-  }
-
-
   const setNotification = (notification) => {
     setMessage(notification)
     setTimeout(() => {
       setMessage(null)
     }, 4000)
+  }
+
+
+  const winnings = (presses, currentPlayer) => {
+
+    if (presses % 500 === 0) {
+      const changed2 = { ...currentPlayer, points: currentPlayer.points + 250 }
+      updatePlayer(changed2, user)
+
+      setNotification(`You won 250 points`)
+    }
+    else if (presses % 100 === 0) {
+      const changed2 = { ...currentPlayer, points: currentPlayer.points + 40 }
+      updatePlayer(changed2, user)
+
+      setNotification(`You won 40 points`)
+    }
+    else if (presses % 10 === 0) {
+      const changed2 = { ...currentPlayer, points: currentPlayer.points + 5 }
+      updatePlayer(changed2, user)
+
+      setNotification('You won 5 points')
+    }
   }
 
 
@@ -74,6 +73,21 @@ const App = () => {
     )
   }
 
+  const playerLosesAllPoints = (playerNow) => {
+
+    if (window.confirm('Do you want to start again?')) {
+
+      const changed2 = { ...playerNow, points: 20 }
+      updatePlayer(changed2, user)
+      setNotification('You have 20 points again. Good luck!')
+
+    } else {
+      const changed3 = { ...playerNow, points: 0 }
+      updatePlayer(changed3, user)
+      setNotification('New game cancelled. You have still 0 points. Play again?')
+    }
+  }
+
 
   const buttonPressed = async () => {
 
@@ -85,25 +99,24 @@ const App = () => {
     const changed = { ...playerNow, points: playerNow.points - 1 }
 
     if (points === 0 || points < 0) {
-      if (window.confirm('Do you want to start again?')) {
-
-        const changed2 = { ...playerNow, points: 20 }
-        updatePlayer(changed2, user)
-        setNotification('You have 20 points again. Good luck!')
-
-      } else {
-        const changed3 = { ...playerNow, points: 0 }
-        updatePlayer(changed3, user)
-        setNotification('New game cancelled. You have still 0 points. Play again?')
-      }
+      playerLosesAllPoints(playerNow)
     } else {
-      updatePlayer(changed, user)
+
+      const updatedPlayer = await playerService
+        .update(changed)
+      setPlayers(players.map(player => player.username === user.username ? updatedPlayer : player))
+      setUser(updatedPlayer)
+      setPoints(updatedPlayer.points)
+
+      window.localStorage.setItem(
+        'loggedUser', JSON.stringify(updatedPlayer)
+      )
 
       const changedPressCount = { ...allCurrentPressesFromPlayers, pressed: allCurrentPressesFromPlayers.pressed + 1 }
       const updatedPressesCount = await pressedService.update(changedPressCount)
       setPresses(presses.map(p => updatedPressesCount))
 
-      winnings(updatedPressesCount.pressed, playerNow)
+      winnings(updatedPressesCount.pressed, updatedPlayer)
     }
   }
 
