@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import playerService from '../services/players'
 
-const Login = (props) => {
+const Login = ({playerAlreadyExists, newPlayer}) => {
 
     const currentPlayer = async (event) => {
         event.preventDefault()
@@ -13,10 +13,10 @@ const Login = (props) => {
     
         if (alreadeExistsUser.length !== 0) {
     
-          props.playerAlreadyExists(alreadeExistsUser)
+          playerAlreadyExists(alreadeExistsUser)
     
         } else {
-          props.newPlayer(un)
+          newPlayer(un)
           
         }
       }
