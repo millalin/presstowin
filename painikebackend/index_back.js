@@ -1,6 +1,5 @@
 require('dotenv').config()
 const express = require('express')
-
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -17,7 +16,12 @@ app.use(express.static('build'))
 mongoose.set('useFindAndModify', false)
 
 
-const url = process.env.MONGODB_URI
+let url = process.env.MONGODB_URI
+
+if (process.env.NODE_ENV === 'test') {
+  url = process.env.TEST_MONGODB_URI
+}
+
 
 console.log('connecting to', url)
 
@@ -131,7 +135,6 @@ app.post('/api/presses', async (request, response, next) => {
 
 
 app.put('/api/presses/:id', (request, response, next) => {
-  console.log('hearerit', request.headers)
   
   const body = request.body
   
@@ -164,7 +167,13 @@ app.use(errorHandler)
 const server = http.createServer(app)
 
 
-const PORT = process.env.PORT || 3001
+let PORT = process.env.PORT || 3001
+if (process.env.NODE_ENV === 'test') {
+  PORT = process.env.TEST_PORT || 3003
+}
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+module.exports = app
